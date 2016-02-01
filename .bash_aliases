@@ -2,11 +2,12 @@ export LEIN_FAST_TRAMPOLINE=y
 alias lt='lein trampoline'
 
 alias apt-get='sudo apt-get'
-alias uu='apt-get update; apt-get upgrade'
+alias uu='apt-get update; apt-get upgrade; update-vim-plugins'
 
 alias txa='tmux a -t'
 alias txls='tmux ls'
 
+alias gcm='git checkout master'
 alias gbrh='git symbolic-ref --short HEAD`'
 alias gca='git commit -a'
 alias gph='git push origin `gbrh`'
@@ -18,9 +19,6 @@ function vs {
 #FIXME: This doesn't work yet.
 # complete -G '~/.vim/sessions/*.vim' vs
 
-export GITSTACK=()
-export GITSTASHCK=()
-
 function pull-all {
   for i in `ls` ; do
     pushd $i
@@ -28,6 +26,15 @@ function pull-all {
     popd
   done
 }
+
+function update-vim-plugins {
+  pushd ~/.vim/bundle
+  pull-all
+  popd
+}
+
+export GITSTACK=()
+export GITSTASHCK=()
 
 function pushb {
   export GITSTACK+=(`git symbolic-ref --short HEAD`)
@@ -45,5 +52,4 @@ function popb {
   echo ${GITSTACK[@]}
 }
 
-
-eval $(thefuck --alias)
+eval $(thefuck --alias) #Why doesn't this work?

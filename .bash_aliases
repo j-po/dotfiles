@@ -1,3 +1,4 @@
+#shopt -s globstar
 export LEIN_FAST_TRAMPOLINE=y
 alias lt='lein trampoline'
 
@@ -12,18 +13,27 @@ alias gbrh='git symbolic-ref --short HEAD`'
 alias gca='git commit -a'
 alias gph='git push origin `gbrh`'
 
+alias vim='nvim'
+
+alias psn='pushd > /dev/null'
+alias ppn='popd > /dev/null'
+
 function vs {
   vim -S ~/.vim/sessions/$1
 }
 
+#function _vsesh {
+#COMPREPLY=`compgen -W (ls ~/.vim/session)`
+#}
+
 #FIXME: This doesn't work yet.
-# complete -G '~/.vim/sessions/*.vim' vs
+#complete -F _vsesh vs
 
 function pull-all {
   for i in `ls` ; do
-    pushd $i
+    psn $i
     git pull
-    popd
+    ppn
   done
 }
 
@@ -31,10 +41,13 @@ function update-vim-plugins {
   pushd ~/.vim/bundle
   pull-all
   popd
+  pushd ~/.config/nvim/nbundle
+  pull-all
+  popd
 }
 
-export GITSTACK=()
-export GITSTASHCK=()
+GITSTACK=()
+GITSTASHCK=()
 
 function pushb {
   export GITSTACK+=(`git symbolic-ref --short HEAD`)

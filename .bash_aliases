@@ -29,10 +29,40 @@ function vs {
 #FIXME: This doesn't work yet.
 #complete -F _vsesh vs
 
+function trimmed-remote-url {
+  URL=`git remote get-url origin`
+  if [[ "$URL" = "https://github.com/"* ]]; then
+    URL="${URL#https://github.com/}"
+    URL="${URL%.git}"
+  elif [[ "$URL" = "git@github.com:"* ]]; then
+    URL="${URL#git@github.com:}"
+    URL="${URL%.git}"
+  else
+    exit 1
+  fi
+  echo $URL
+  exit 0
+}
+
+function compare-upstream-hash {
+  LOCAL_SHA="$(git rev-parse "refs/remotes/origin/`git symbolic-ref --short HEAD`")"
+  UPSTREAM_SHA_HTTP_CODE="$(curl "https://api.github.com/repos/`trimmed-remote-url`/commits/master" \
+  -H "Accept: application/vnd.github.chitauri-preview+sha" \
+  -H "If-None-Match: \"$LOCAL_SHA\"")"
+
+  if [[ $UPSTREAM_SHA_HTTP_CODE = "304" ]]; then
+    exit 1
+  else
+    exit 0
+  fi
+}
+
 function pull-all {
   for i in `ls` ; do
     psn $i
-    git pull
+#    if `compare-upstream-hash`; then
+      git pull
+#    fi
     ppn
   done
 }

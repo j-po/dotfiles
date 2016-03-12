@@ -41,7 +41,6 @@ function trimmed-remote-url {
     exit 1
   fi
   echo $URL
-  exit 0
 }
 
 function compare-upstream-hash {
@@ -51,18 +50,17 @@ function compare-upstream-hash {
   -H "If-None-Match: \"$LOCAL_SHA\"")"
 
   if [[ $UPSTREAM_SHA_HTTP_CODE = "304" ]]; then
+    echo "matches"
     exit 1
-  else
-    exit 0
   fi
 }
 
 function pull-all {
   for i in `ls` ; do
     psn $i
-#    if `compare-upstream-hash`; then
+    #if `compare-upstream-hash`; then
       git pull
-#    fi
+    #fi
     ppn
   done
 }
